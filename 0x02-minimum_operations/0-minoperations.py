@@ -10,6 +10,7 @@ The function takes an integer n and returns the minimum number of
 operations needed, or 0 if n is impossible to achieve.
 """
 
+
 def minOperations(n):
     """
     Calculate the minimum number of operations to reach exactly n
