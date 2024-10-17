@@ -1,5 +1,4 @@
 # Minimum Operations
-# Project Report: Minimum Operations Problem
 
 In this project, I needed to understand several key algorithmic and mathematical concepts to devise a solution that efficiently calculates the minimum number of operations required to achieve a given number of characters using only “Copy All” and “Paste” operations. This report outlines the essential concepts and resources that were instrumental in tackling this problem.
 
