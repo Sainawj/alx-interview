@@ -2,12 +2,13 @@
 
 import sys
 
+
 def print_msg(status_codes_count, total_file_size):
     """
     Prints the total file size and the count of different HTTP status codes.
 
     Args:
-        status_codes_count (dict): Dictionary containing status codes and their counts.
+        status_codes_count (dict): contains status codes and their counts.
         total_file_size (int): Total size of the files processed.
 
     Returns:
@@ -19,7 +20,9 @@ def print_msg(status_codes_count, total_file_size):
         if count > 0:
             print("{}: {}".format(code, count))
 
-# Initialize total file size, status code counter, and the number of lines processed
+
+# Initialize total file size, status code counter
+# and the number of lines processed
 total_file_size = 0
 status_code = 0
 line_count = 0
