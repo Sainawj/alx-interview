@@ -1,78 +1,65 @@
 #!/usr/bin/python3
+
 import sys
-import signal
-import re
 
-# Initialize the variables
+def print_msg(status_codes_count, total_file_size):
+    """
+    Prints the total file size and the count of different HTTP status codes.
+
+    Args:
+        status_codes_count (dict): Dictionary containing status codes and their counts.
+        total_file_size (int): Total size of the files processed.
+
+    Returns:
+        None
+    """
+    print("Total File Size: {}".format(total_file_size))
+    # Print each status code with a count, if the count is greater than zero
+    for code, count in sorted(status_codes_count.items()):
+        if count > 0:
+            print("{}: {}".format(code, count))
+
+# Initialize total file size, status code counter, and the number of lines processed
 total_file_size = 0
-status_code_counts = {
-    '200': 0,
-    '301': 0,
-    '400': 0,
-    '401': 0,
-    '403': 0,
-    '404': 0,
-    '405': 0,
-    '500': 0
-}
-
+status_code = 0
 line_count = 0
 
-# Regex pattern to match the log format
-log_pattern = re.compile(
-    r'(?P<ip>\S+) - \[(?P<date>.*?)\] '
-    r'"GET /projects/260 HTTP/1.1" (?P<status_code>\d{3}) (?P<file_size>\d+)'
-)
+# Dictionary to hold counts of different HTTP status codes
+status_codes_count = {
+    "200": 0,
+    "301": 0,
+    "400": 0,
+    "401": 0,
+    "403": 0,
+    "404": 0,
+    "405": 0,
+    "500": 0
+}
 
-
-def print_stats():
-    """Print the current statistics of file size and status code counts."""
-    print(f"File size: {total_file_size}")
-    for code in sorted(status_code_counts.keys()):
-        if status_code_counts[code] > 0:
-            print(f"{code}: {status_code_counts[code]}")
-
-
-def signal_handler(sig, frame):
-    """Handle the Ctrl+C signal by printing stats before exiting."""
-    print_stats()
-    sys.exit(0)
-
-
-# Set up the signal handler for Ctrl+C (SIGINT)
-signal.signal(signal.SIGINT, signal_handler)
-
-# Process each line from stdin
 try:
+    # Read lines from standard input
     for line in sys.stdin:
-        match = log_pattern.match(line)
+        # Split the line into parts and reverse it for easier access
+        parsed_line = line.split()[::-1]
 
-        # Check if the line matches the expected format
-        if not match:
-            print("DEBUG: Skipping line due to incorrect format")
-            continue
-
-        # Extract the necessary values from regex match
-        status_code = match.group('status_code')
-        file_size = int(match.group('file_size'))
-
-        # Update the total file size
-        total_file_size += file_size
-
-        # Update the status code count if valid
-        if status_code in status_code_counts:
-            status_code_counts[status_code] += 1
-        else:
-            print(f"DEBUG: Status code {status_code} "
-                  "not in known status codes")
-
+        # Check if there are enough elements in the parsed line
+        if len(parsed_line) > 2:
             line_count += 1
 
-        # Every 10 lines, print the stats
-        if line_count % 10 == 0:
-            print_stats()
+            if line_count <= 10:
+                # Update total file size with the first element (file size)
+                total_file_size += int(parsed_line[0])
+                status_code = parsed_line[1]  # Get the status code
 
-except KeyboardInterrupt:
-    # If interrupted by keyboard, print the stats
-    print_stats()
-    sys.exit(0)
+                # If the status code is in our dictionary, increment its count
+                if status_code in status_codes_count:
+                    status_codes_count[status_code] += 1
+
+            # Print messages for every 10 lines processed
+            if line_count == 10:
+                print_msg(status_codes_count, total_file_size)
+                line_count = 0  # Reset line count for the next batch
+
+# Finally, print the results for any remaining lines processed
+finally:
+    print_msg(status_codes_count, total_file_size)
