@@ -2,8 +2,7 @@
 
 import sys
 
-
-def print_msg(status_codes_count, total_file_size):
+def print_metrics(status_codes_count, total_file_size):
     """
     Prints the total file size and the count of different HTTP status codes.
 
@@ -16,15 +15,14 @@ def print_msg(status_codes_count, total_file_size):
     """
     print("Total File Size: {}".format(total_file_size))
     # Print each status code with a count, if the count is greater than zero
-    for code, count in sorted(status_codes_count.items()):
+    for code in sorted(status_codes_count.keys()):
+        count = status_codes_count[code]
         if count > 0:
             print("{}: {}".format(code, count))
 
 
-# Initialize total file size, status code counter
-# and the number of lines processed
+# Initialize total file size, status code counter, and the number of lines processed
 total_file_size = 0
-status_code = 0
 line_count = 0
 
 # Dictionary to hold counts of different HTTP status codes
@@ -42,27 +40,31 @@ status_codes_count = {
 try:
     # Read lines from standard input
     for line in sys.stdin:
-        # Split the line into parts and reverse it for easier access
-        parsed_line = line.split()[::-1]
+        # Parse the line according to the specified format
+        parts = line.split()
+        
+        # Check if the line matches the expected format
+        if len(parts) >= 6 and parts[1].startswith('-') and parts[3].startswith('"') and parts[4].startswith('HTTP/'):
+            # Extract relevant fields
+            status_code = parts[-2]
+            file_size = parts[-1]
 
-        # Check if there are enough elements in the parsed line
-        if len(parsed_line) > 2:
-            line_count += 1
+            # Update metrics only if the status code is valid and the file size is an integer
+            if status_code in status_codes_count and file_size.isdigit():
+                total_file_size += int(file_size)
+                status_codes_count[status_code] += 1
+                line_count += 1
 
-            if line_count <= 10:
-                # Update total file size with the first element (file size)
-                total_file_size += int(parsed_line[0])
-                status_code = parsed_line[1]  # Get the status code
+                # Print metrics for every 10 lines processed
+                if line_count == 10:
+                    print_metrics(status_codes_count, total_file_size)
+                    line_count = 0  # Reset line count for the next batch
 
-                # If the status code is in our dictionary, increment its count
-                if status_code in status_codes_count:
-                    status_codes_count[status_code] += 1
+except KeyboardInterrupt:
+    # Handle keyboard interruption to print final metrics
+    print_metrics(status_codes_count, total_file_size)
 
-            # Print messages for every 10 lines processed
-            if line_count == 10:
-                print_msg(status_codes_count, total_file_size)
-                line_count = 0  # Reset line count for the next batch
-
-# Finally, print the results for any remaining lines processed
 finally:
-    print_msg(status_codes_count, total_file_size)
+    # Print the results for any remaining lines processed
+    if line_count > 0:
+        print_metrics(status_codes_count, total_file_size)
