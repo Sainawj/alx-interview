@@ -1,68 +1,55 @@
 #!/usr/bin/python3
-
 import sys
 
-
-def print_msg(status_codes_count, total_file_size):
-    """
-    Prints the total file size and the count of different HTTP status codes.
-
-    Args:
-        status_codes_count (dict): contains status codes and their counts.
-        total_file_size (int): Total size of the files processed.
-
-    Returns:
-        None
-    """
-    print("Total File Size: {}".format(total_file_size))
-    # Print each status code with a count, if the count is greater than zero
-    for code, count in sorted(status_codes_count.items()):
-        if count > 0:
-            print("{}: {}".format(code, count))
-
-
-# Initialize total file size, status code counter
-# and the number of lines processed
-total_file_size = 0
-status_code = 0
+# Initialize total file size and a dictionary to store status code counts
+total_size = 0
+status_counts = {
+    200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0
+}
 line_count = 0
 
-# Dictionary to hold counts of different HTTP status codes
-status_codes_count = {
-    "200": 0,
-    "301": 0,
-    "400": 0,
-    "401": 0,
-    "403": 0,
-    "404": 0,
-    "405": 0,
-    "500": 0
-}
+
+def print_stats():
+    """Function to print the current stats for
+    total file size and status codes."""
+    print(f"File size: {total_size}")
+    for code in sorted(status_counts.keys()):
+        if status_counts[code] > 0:
+            print(f"{code}: {status_counts[code]}")
+
 
 try:
-    # Read lines from standard input
     for line in sys.stdin:
-        # Split the line into parts and reverse it for easier access
-        parsed_line = line.split()[::-1]
+        line = line.strip()
+        parts = line.split()
+        # Check for valid line format with at least 7 elements
+        if len(parts) < 7:
+            continue
+        try:
+            # Extract the file size and status code
+            file_size = int(parts[-1])
+            status_code = int(parts[-2])
 
-        # Check if there are enough elements in the parsed line
-        if len(parsed_line) > 2:
+            # Update metrics
+            total_size += file_size
+            if status_code in status_counts:
+                status_counts[status_code] += 1
+
+            # Increment line counter
             line_count += 1
 
-            if line_count <= 10:
-                # Update total file size with the first element (file size)
-                total_file_size += int(parsed_line[0])
-                status_code = parsed_line[1]  # Get the status code
+            # Print stats every 10 lines
+            if line_count % 10 == 0:
+                print_stats()
 
-                # If the status code is in our dictionary, increment its count
-                if status_code in status_codes_count:
-                    status_codes_count[status_code] += 1
+        except (ValueError, IndexError):
+            # Skip lines with invalid format
+            continue
 
-            # Print messages for every 10 lines processed
-            if line_count == 10:
-                print_msg(status_codes_count, total_file_size)
-                line_count = 0  # Reset line count for the next batch
+except KeyboardInterrupt:
+    # On keyboard interruption, print the current stats
+    print_stats()
+    raise
 
-# Finally, print the results for any remaining lines processed
-finally:
-    print_msg(status_codes_count, total_file_size)
+# Ensure final output of stats if not already done
+print_stats()
