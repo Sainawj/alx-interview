@@ -1,53 +1,25 @@
 #!/usr/bin/node
-
 const request = require('request');
-
-// Check if the correct number of arguments is provided
-if (process.argv.length !== 3) {
-  console.error('Usage: ./0-starwars_characters.js <Movie ID>');
-  process.exit(1);
-}
-
-// Get the Movie ID
 const movieId = process.argv[2];
-const apiUrl = `https://swapi.dev/api/films/${movieId}/`;
+const options = {
+  url: 'https://swapi-api.hbtn.io/api/films/' + movieId,
+  method: 'GET'
+};
 
-// Fetch movie data
-request(apiUrl, (err, res, body) => {
-  if (err) {
-    console.error('Error:', err);
-    return;
+request(options, function (error, response, body) {
+  if (!error) {
+    const characters = JSON.parse(body).characters;
+    printCharacters(characters, 0);
   }
-
-  if (res.statusCode !== 200) {
-    console.error('Error: Unable to fetch movie data. Check Movie ID.');
-    return;
-  }
-
-  const filmData = JSON.parse(body);
-  const characters = filmData.characters;
-
-  // Fetch character names concurrently
-  Promise.all(
-    characters.map((characterUrl) => {
-      return new Promise((resolve, reject) => {
-        request(characterUrl, (charErr, charRes, charBody) => {
-          if (charErr) {
-            reject(charErr);
-          } else if (charRes.statusCode !== 200) {
-            reject(new Error('Failed to fetch character data'));
-          } else {
-            const characterData = JSON.parse(charBody);
-            resolve(characterData.name);
-          }
-        });
-      });
-    })
-  )
-    .then((characterNames) => {
-      characterNames.forEach((name) => console.log(name));
-    })
-    .catch((fetchError) => {
-      console.error('Error fetching characters:', fetchError.message);
-    });
 });
+
+function printCharacters (characters, index) {
+  request(characters[index], function (error, response, body) {
+    if (!error) {
+      console.log(JSON.parse(body).name);
+      if (index + 1 < characters.length) {
+        printCharacters(characters, index + 1);
+      }
+    }
+  });
+}
