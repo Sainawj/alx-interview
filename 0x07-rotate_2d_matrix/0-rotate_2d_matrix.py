@@ -7,7 +7,7 @@ This script rotates a 2D matrix 90 degrees clockwise in place.
 
 def rotate_2d_matrix(matrix):
     """Rotate two dimension matrix 90 degrees clockwise.
-    
+   
     Args:
         matrix (list[[list]]): A square matrix (list of lists).
     """
