@@ -1,9 +1,21 @@
 #!/usr/bin/python3
-"""Island Perimeter Problem
+"""
+Function to calculate the perimeter of an island described in a grid.
+The grid is a rectangular matrix of 1s (land) and 0s (water).
 """
 
 
 def island_perimeter(grid):
+    """
+    Function to calculate the perimeter of the island in the grid.
+
+    Args:
+        grid (list of list of int): A 2D grid of integers where
+        1 represents land and 0 represents water.
+
+    Returns:
+        int: The perimeter of the island.
+    """
     perimeter = 0
     rows = len(grid)
     cols = len(grid[0])
