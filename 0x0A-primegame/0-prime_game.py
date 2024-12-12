@@ -1,54 +1,63 @@
 #!/usr/bin/python3
+"""0. Prime Game - Maria and Ben are playing a game"""
 
 def isWinner(x, nums):
-    """Determines the player who wins the most rounds in the Prime Game."""
+    """Determines the winner of the Prime Game for multiple rounds.
     
-    def is_prime(n):
-        """Helper function to check if a number is prime."""
-        if n < 2:
-            return False
-        for i in range(2, int(n ** 0.5) + 1):
-            if n % i == 0:
-                return False
-        return True
+    Args:
+        x (int): The number of rounds.
+        nums (list): A list of numbers, where each number represents the 
+                     upper limit of a round.
+    
+    Returns:
+        str: The name of the player who wins the most rounds ('Maria' or 'Ben'),
+             or None if there is no clear winner.
+    """
+    # Check for invalid input (negative rounds or None for nums)
+    if x <= 0 or nums is None:
+        return None
+    # Ensure that the number of rounds matches the length of the nums list
+    if x != len(nums):
+        return None
 
-    def game(n):
-        """Simulates a single round of the game."""
-        if n < 2:
-            return 'Ben'  # Ben wins if there are no primes for Maria to pick
-        
-        # Step 1: Generate list of primes up to n
-        primes = [i for i in range(2, n + 1) if is_prime(i)]
-        available = [True] * (n + 1)
-        
-        # Step 2: Simulate turns (Maria starts)
-        turn = 0  # 0 for Maria, 1 for Ben
-        
-        while primes:
-            prime = primes.pop(0)
-            # Mark all multiples of prime as removed
-            for i in range(prime, n + 1, prime):
-                if available[i]:
-                    available[i] = False
-            turn = 1 - turn  # Switch turns
-        
-        # Step 3: Determine the winner
-        return 'Maria' if turn == 1 else 'Ben'
+    # Initialize counters for Ben and Maria's wins
+    ben = 0
+    maria = 0
+
+    # Create a list 'a' to mark prime numbers (1 for possible primes, 0 for non-primes)
+    a = [1 for x in range(sorted(nums)[-1] + 1)]
+    # Mark 0 and 1 as non-prime numbers
+    a[0], a[1] = 0, 0
     
-    # Step 4: Track wins for each player
-    maria_wins = ben_wins = 0
-    
-    for n in nums:
-        winner = game(n)
-        if winner == 'Maria':
-            maria_wins += 1
-        elif winner == 'Ben':
-            ben_wins += 1
-    
-    # Step 5: Return the player with most wins
-    if maria_wins > ben_wins:
-        return 'Maria'
-    elif ben_wins > maria_wins:
-        return 'Ben'
-    
+    # Iterate through the list and remove multiples of primes
+    for i in range(2, len(a)):
+        rm_multiples(a, i)
+
+    # Loop through each round and determine the winner
+    for i in nums:
+        # If the sum of prime numbers up to 'i' is even, Ben wins the round
+        if sum(a[0:i + 1]) % 2 == 0:
+            ben += 1
+        else:  # Otherwise, Maria wins
+            maria += 1
+
+    # Return the player with the most wins
+    if ben > maria:
+        return "Ben"
+    if maria > ben:
+        return "Maria"
     return None
+
+
+def rm_multiples(ls, x):
+    """Removes multiples of prime numbers from the list.
+    
+    Args:
+        ls (list): The list of prime numbers.
+        x (int): The prime number whose multiples should be marked as non-prime.
+    """
+    for i in range(2, len(ls)):
+        try:
+            ls[i * x] = 0  # Mark the multiple as non-prime
+        except (ValueError, IndexError):
+            break
