@@ -57,7 +57,8 @@ def rm_multiples(ls, x):
 
     Args:
         ls (list): The list of prime numbers.
-        x (int): The prime number whose multiples should be marked as non-prime.
+        x (int): The prime number whose multiples should
+        be marked as non-prime.
     """
     for i in range(2, len(ls)):
         try:
