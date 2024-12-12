@@ -18,7 +18,7 @@ def isWinner(x, nums):
         # Step 1: Generate a list of available numbers
         available = [True] * (n + 1)
         primes = [i for i in range(2, n + 1) if is_prime(i)]
-  
+
         # Step 2: Simulate the game turn by turn
         turn = 0  # 0 for Maria, 1 for Ben
 
