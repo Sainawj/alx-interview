@@ -27,7 +27,7 @@ def isWinner(x, nums):
     maria = 0
 
     # Create a list 'a' to mark prime numbers
-    #(1 for possible primes, 0 for non-primes)
+    # (1 for possible primes, 0 for non-primes)
     a = [1 for x in range(sorted(nums)[-1] + 1)]
     # Mark 0 and 1 as non-prime numbers
     a[0], a[1] = 0, 0
