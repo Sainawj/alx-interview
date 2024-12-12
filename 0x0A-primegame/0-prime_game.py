@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 def isWinner(x, nums):
     def is_prime(n):
         """Helper function to check if a number is prime."""
