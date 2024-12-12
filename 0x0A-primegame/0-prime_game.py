@@ -9,7 +9,7 @@ def isWinner(x, nums):
         x (int): The number of rounds.
         nums (list): A list of numbers, where each number represents the
         upper limit of a round.
-   
+
     Returns:
         str: The name of the player who wins the most
         rounds ('Maria' or 'Ben'),
