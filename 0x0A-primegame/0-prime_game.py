@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 """0. Prime Game - Maria and Ben are playing a game"""
 
+
 def isWinner(x, nums):
     """Determines the winner of the Prime Game for multiple rounds.
-    
+
     Args:
         x (int): The number of rounds.
-        nums (list): A list of numbers, where each number represents the 
-                     upper limit of a round.
-    
+        nums (list): A list of numbers, where each number represents the
+        upper limit of a round.
+   
     Returns:
-        str: The name of the player who wins the most rounds ('Maria' or 'Ben'),
+        str: The name of the player who wins the most
+        rounds ('Maria' or 'Ben'),
              or None if there is no clear winner.
     """
     # Check for invalid input (negative rounds or None for nums)
@@ -24,11 +26,12 @@ def isWinner(x, nums):
     ben = 0
     maria = 0
 
-    # Create a list 'a' to mark prime numbers (1 for possible primes, 0 for non-primes)
+    # Create a list 'a' to mark prime numbers
+    (1 for possible primes, 0 for non-primes)
     a = [1 for x in range(sorted(nums)[-1] + 1)]
     # Mark 0 and 1 as non-prime numbers
     a[0], a[1] = 0, 0
-    
+
     # Iterate through the list and remove multiples of primes
     for i in range(2, len(a)):
         rm_multiples(a, i)
@@ -51,7 +54,7 @@ def isWinner(x, nums):
 
 def rm_multiples(ls, x):
     """Removes multiples of prime numbers from the list.
-    
+
     Args:
         ls (list): The list of prime numbers.
         x (int): The prime number whose multiples should be marked as non-prime.
